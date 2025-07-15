@@ -1,13 +1,13 @@
 # Health RAG Chatbot
 
-A professional, open-source Retrieval-Augmented Generation (RAG) chatbot for health information, grounded in a curated set of trusted health documents. Built with Python, FAISS, Sentence-Transformers, and a local LLM (Llama 3-Instruct 8B via Ollama).
+A simple, open-source Retrieval-Augmented Generation (RAG) chatbot for health information, grounded in a curated set of trusted health documents. Built with Python, FAISS, Sentence-Transformers, and a local LLM (Llama 3-Instruct 8B via Ollama).
 
 ---
 
 ## Features
 - **Healthcare-focused RAG pipeline**: Answers strictly grounded in a curated health corpus (WHO, CDC, NIH, etc.)
 - **Citations**: Every answer includes inline citations to the source document and section
-- **No Hallucination**: If the answer is not in the corpus, the bot says "I don’t know based on the provided corpus"
+- **No Hallucination**: If the answer is not in the corpus, the bot says "I'm sorry, but I can only provide information based on the health-related documents in my knowledge base. Please ask a question related to healthcare, and I’d be happy to assist!"
 - **Minimal, modern UI**: Streamlit app with a dark chat-style interface
 - **Open-source LLM**: Uses Mistral-Instruct (via Ollama)
 - **Easy extensibility**: Add more documents or swap LLMs with minimal changes
@@ -75,7 +75,7 @@ streamlit run src/app.py
 ## Citation & Grounding Policy
 - All answers are generated strictly from retrieved passages
 - Inline citations reference the document and section (e.g., [WHO Hypertension, 2023])
-- If the answer is not in the corpus, the bot responds: "I don’t know based on the provided corpus"
+- If the answer is not in the corpus, the bot responds: "I'm sorry, but I can only provide information based on the health-related documents in my knowledge base. Please ask a question related to healthcare, and I’d be happy to assist!"
 
 ---
 
@@ -88,75 +88,6 @@ streamlit run src/app.py
 ## License
 MIT 
 
----
-
-## 1. **Sample Q&A List (for README/demo)**
-
-Here’s a markdown-formatted sample Q&A list based on your image, ready for your documentation or demo:
-
-```markdown
-<code_block_to_apply_changes_from>
-```
-
----
-
-## 2. **Fixing the LLM API 404 Error**
-
-You are still getting:
-```
-Error contacting LLM API: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
-```
-This means the `/api/generate` endpoint is not available for your current Ollama model or server.
-
-### **Checklist to Fix:**
-
-1. **Check Ollama is Running:**
-   ```bash
-   ollama list
-   ```
-   (You already did this, so Ollama is running.)
-
-2. **Test the Endpoint Directly:**
-   Try this in your terminal:
-   ```bash
-   curl http://localhost:11434/api/generate -d '{
-     "model": "mistral:instruct",
-     "prompt": "What is asthma?",
-     "stream": false
-   }'
-   ```
-   - If you get a 404, your Ollama version or model may not support `/api/generate`.
-   - If you get a valid answer, the endpoint is correct.
-
-3. **Check Ollama Version:**
-   - You are on `0.5.12`, which should support `/api/generate`.
-
-4. **Try `/api/chat` Again:**
-   Some models in newer Ollama versions only support `/api/chat`. Try:
-   ```bash
-   curl http://localhost:11434/api/chat -d '{
-     "model": "mistral:instruct",
-     "messages": [
-       {"role": "user", "content": "What is asthma?"}
-     ]
-   }'
-   ```
-   - If this works, update your `.env` and code to use `/api/chat`.
-
-5. **Check Model Name:**
-   - Run `ollama list` and make sure the model name is exactly `mistral:instruct` (or whatever is listed).
-
----
-
-## **What to Do Next**
-
-- **Paste the output of the curl commands above** so I can see which endpoint works.
-- **Once we confirm the working endpoint, I’ll update your code and `.env` accordingly.**
-
----
-
-**Let’s get the API working, then you’ll be able to demo the Q&A with real answers and citations!**  
-Let me know the curl results, or if you want me to generate a fallback (mock) Q&A output for your README/demo in the meantime.
 
 ### Sample Q&A Demo
 

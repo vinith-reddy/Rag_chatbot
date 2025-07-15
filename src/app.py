@@ -54,13 +54,23 @@ query = st.text_input("Your question:", "", key="input")
 
 if st.button("Get Answer") and query.strip():
     with st.spinner("Retrieving answer..."):
-        answer, chunks = answer_query(query)
+        answer, chunks, ooc_flag = answer_query(query)
     st.markdown('<div class="chat-bubble">', unsafe_allow_html=True)
     st.markdown(f"**Answer:**\n{answer}")
     st.markdown('</div>', unsafe_allow_html=True)
-    if "I don’t know based on the provided corpus" in answer or "I don't know based on the provided corpus" in answer:
+    if ooc_flag:
         st.info("This question could not be answered from the provided health documents.")
-    st.markdown('<div class="sources">**Top Retrieved Sources:**<ul>', unsafe_allow_html=True)
-    for c in chunks:
-        st.markdown(f"<li>{c['doc_title']} (<a href='{c['doc_url']}' style='color:#b3b3b3;' target='_blank'>{c['doc_url']}</a>)</li>", unsafe_allow_html=True)
-    st.markdown('</ul></div>', unsafe_allow_html=True) 
+    else:
+        # Deduplicate sources by document title and URL
+        unique_sources = []
+        seen_sources = set()
+        for c in chunks:
+            source_key = f"{c['doc_title']}_{c['doc_url']}"
+            if source_key not in seen_sources:
+                unique_sources.append(c)
+                seen_sources.add(source_key)
+        
+        st.markdown('<div class="sources">**Top Retrieved Sources:**<ul>', unsafe_allow_html=True)
+        for c in unique_sources:
+            st.markdown(f"<li>{c['doc_title']} (<a href='{c['doc_url']}' style='color:#b3b3b3;' target='_blank'>{c['doc_url']}</a>)</li>", unsafe_allow_html=True)
+        st.markdown('</ul></div>', unsafe_allow_html=True) 

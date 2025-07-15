@@ -59,17 +59,45 @@ def answer_query(query):
     model = SentenceTransformer(EMBED_MODEL)
     top_chunks = retrieve(query, model, index, meta)
     context = format_context(top_chunks)
-    prompt = f"You are a healthcare assistant. Only answer using the provided context. If the answer is not in the context, say 'I don’t know based on the provided corpus.' Always cite sources inline.\n\nContext:\n{context}\n\nQuestion: {query}\n\nAnswer (with citations):"
+    OOC_MSG = ("I'm sorry, but I can only provide information based on the health-related documents in my knowledge base. "
+               "Please ask a question related to healthcare, and I'd be happy to assist!")
+    
+    # Check if context is relevant to the query
+    if not context.strip() or len(context.strip()) < 50:  # Very short context likely means no relevant info
+        return OOC_MSG, [], True
+    
+    prompt = (
+        "SYSTEM: You are a healthcare assistant that ONLY answers questions using the provided context. "
+        "CRITICAL RULE: If the question cannot be answered from the provided context, you MUST respond with EXACTLY this message and nothing else:\n"
+        f"'{OOC_MSG}'\n"
+        "Do not add any explanations, citations, or additional information. Do not provide any sources or references.\n\n"
+        "If the question CAN be answered from the context, provide a detailed answer with inline citations.\n\n"
+        f"Context:\n{context}\n\nQuestion: {query}\n\nAnswer:"
+    )
     try:
         answer = call_ollama_generate_api(prompt)
     except Exception as e:
         answer = f"Error contacting LLM API: {e}"
-    return answer, top_chunks
+    
+    # Out-of-context detection - check for various patterns
+    ooc_flag = False
+    answer_lower = answer.strip().lower()
+    
+    # Check if answer contains our key phrases or indicates out-of-context
+    if (answer.strip().startswith(OOC_MSG) or 
+        "i'm sorry, but" in answer_lower and "health-related documents" in answer_lower and "healthcare" in answer_lower or
+        "not related to the provided context" in answer_lower or
+        "not in the context" in answer_lower and "health" in answer_lower):
+        ooc_flag = True
+        # Clean the answer to only include our message (remove any additional content)
+        answer = OOC_MSG
+    
+    return answer, top_chunks, ooc_flag
 
 if __name__ == '__main__':
     # Example usage
     q = input("Enter your health question: ")
-    answer, chunks = answer_query(q)
+    answer, chunks, ooc_flag = answer_query(q)
     print("\nAnswer:\n", answer)
     print("\nRetrieved Chunks:")
     for c in chunks:
