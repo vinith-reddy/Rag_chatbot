@@ -22,7 +22,7 @@ User Query
    |   Top-k relevant chunks
    |
    v
-[LLM Synthesis: Llama 3-Instruct 8B (Ollama)]
+[LLM Synthesis: Mistral-Instruct (Ollama, /api/generate)]
    |
    v
 [Grounded Answer + Citations]
@@ -37,7 +37,7 @@ User Query
 - **Ingestion**: Downloads, cleans, and chunks HTML health documents.
 - **Vectorization**: Embeds chunks using Sentence-Transformers; stores in FAISS for fast similarity search.
 - **Retrieval**: For each query, retrieves top-k most relevant chunks using cosine similarity.
-- **LLM Synthesis**: Llama 3-Instruct 8B (via Ollama) is prompted with the retrieved context and instructed to only answer from the context, always with citations. If the answer is not found, it must say "I don’t know based on the provided corpus."
+- **LLM Synthesis**: Mistral-Instruct (via Ollama, /api/generate) is prompted with the retrieved context and instructed to only answer from the context, always with citations. If the answer is not found, it must say "I don’t know based on the provided corpus."
 - **UI**: Streamlit app with a modern, dark chat interface.
 
 ---

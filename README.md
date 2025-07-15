@@ -9,7 +9,7 @@ A professional, open-source Retrieval-Augmented Generation (RAG) chatbot for hea
 - **Citations**: Every answer includes inline citations to the source document and section
 - **No Hallucination**: If the answer is not in the corpus, the bot says "I don’t know based on the provided corpus"
 - **Minimal, modern UI**: Streamlit app with a dark chat-style interface
-- **Open-source LLM**: Uses Llama 3-Instruct 8B via Ollama (or compatible local API)
+- **Open-source LLM**: Uses Mistral-Instruct (via Ollama)
 - **Easy extensibility**: Add more documents or swap LLMs with minimal changes
 
 ---
@@ -27,20 +27,20 @@ conda activate RCB
 pip install -r requirements.txt
 ```
 
-### 3. Download and run Llama 3-Instruct 8B with Ollama
+### 3. Download and run Mistral-Instruct with Ollama
 - [Install Ollama](https://ollama.com/download)
 - Pull the model:
   ```bash
-  ollama pull llama3:8b-instruct
-  ollama run llama3:8b-instruct
+  ollama pull mistral:instruct
+  ollama run mistral:instruct
   ```
-- The default API endpoint is `http://localhost:11434/api/chat`
+- The default API endpoint is `http://localhost:11434/api/generate`
 
 ### 4. Configure environment variables
 Create a `.env` file in the project root:
 ```
-LLAMA3_API_URL=http://localhost:11434/api/chat
-LLAMA3_MODEL=llama3:8b-instruct
+LLAMA3_API_URL=http://localhost:11434/api/generate
+LLAMA3_MODEL=mistral:instruct
 ```
 
 ### 5. Ingest and index the health corpus
@@ -67,7 +67,7 @@ streamlit run src/app.py
 - **Ingestion**: Downloads, cleans, and chunks health documents (HTML)
 - **Vectorization**: Embeds chunks with Sentence-Transformers and indexes with FAISS
 - **Retrieval**: Finds top-k relevant chunks for a query
-- **LLM Synthesis**: Local Llama 3-Instruct 8B generates answers, strictly grounded in retrieved context
+- **LLM Synthesis**: Local Mistral-Instruct (via Ollama) generates answers, strictly grounded in retrieved context
 - **UI**: Streamlit app for user interaction
 
 ---
