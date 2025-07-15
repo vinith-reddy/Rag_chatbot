@@ -1,5 +1,5 @@
 import streamlit as st
-from rag_pipeline import answer_query
+from .rag_pipeline import answer_query
 
 st.set_page_config(page_title="Health RAG Chatbot", page_icon="💬", layout="centered")
 
